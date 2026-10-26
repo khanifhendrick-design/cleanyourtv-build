@@ -93,7 +93,7 @@ public class PrayerTimesPanel extends LinearLayout {
         t.setText(s);
         t.setTextSize(size);
         t.setTextColor(color);
-        t.setTypeface(Typeface.create(bold?"sans-serif-medium":"sans-serif",0));
+        t.setTypeface(Typeface.create(bold?"sans-serif-medium":"sans-serif",Typeface.NORMAL));
         t.setIncludeFontPadding(false);
         return t;
     }
