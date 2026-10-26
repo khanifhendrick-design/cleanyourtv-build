@@ -186,6 +186,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private TextView stats;
     private List<RaceWeekend.Race> raceCalendar;
     private View racePanel;
+    private PrayerTimesPanel prayerTimesPanel;
     private TextView raceKicker, raceHeadline, raceSessions;
     /** config.xml show_stats, overridable by a theme. Off: the line is gone and nothing is read. */
     private boolean showStats;
@@ -476,6 +477,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         stats = findViewById(R.id.stats);
         raceCalendar = cfg.raceCalendar;
         racePanel = findViewById(R.id.racePanel);
+        prayerTimesPanel = findViewById(R.id.prayerTimesPanel);
         raceKicker = findViewById(R.id.raceKicker);
         raceHeadline = findViewById(R.id.raceHeadline);
         raceSessions = findViewById(R.id.raceSessions);
@@ -1193,6 +1195,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         wallpaperPlayer.close();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
+        if (prayerTimesPanel != null) prayerTimesPanel.stopUpdates();
         if (tim != null) tim.unregisterCallback(inputCallback);
         if (cm != null) {
             cm.unregisterNetworkCallback(networkCallback);

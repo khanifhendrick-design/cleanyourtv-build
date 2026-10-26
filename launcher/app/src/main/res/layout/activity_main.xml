@@ -363,6 +363,13 @@
             </LinearLayout>
         </RelativeLayout>
 
+        <com.gathin.tvhome.PrayerTimesPanel
+            android:id="@+id/prayerTimesPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="2dp" />
+
         <!-- The wrapper clips at the grid's edge; the grid itself must not clip so scaled tiles can overflow their cells. -->
         <FrameLayout
             android:layout_width="match_parent"
