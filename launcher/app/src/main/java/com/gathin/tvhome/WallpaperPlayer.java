@@ -49,6 +49,7 @@ final class WallpaperPlayer {
     /** The picture on screen, released once the next one has been drawn. */
     private Bitmap current;
     private boolean active;
+    private boolean forceNext;
     private boolean closed;
     private boolean loading;
     private String displayed = "";
@@ -130,6 +131,7 @@ final class WallpaperPlayer {
 
     void start() {
         active = true;
+        forceNext = true;
         update();
     }
 
@@ -172,7 +174,10 @@ final class WallpaperPlayer {
         List<File> playable = playable();
         File selected = WallpaperRotation.find(playable, previous);
         long changed = preferences.getLong("changed", 0);
-        if (selected == null || WallpaperRotation.due(changed, System.currentTimeMillis(), interval)) {
+        if (forceNext) {
+            selected = WallpaperRotation.pick(playable, previous, order, random);
+            forceNext = false;
+        } else if (selected == null || WallpaperRotation.due(changed, System.currentTimeMillis(), interval)) {
             selected = WallpaperRotation.pick(playable, previous, order, random);
         }
         if (selected == null || selected.getName().equals(displayed)) return;

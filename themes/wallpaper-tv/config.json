@@ -1,0 +1,19 @@
+{
+  "dock_apps": [
+    "com.netflix.ninja",
+    "com.tcl.browser",
+    "com.live_streaming_tv.online_tv",
+    "com.vidio.android.tv",
+    "com.google.android.youtube.tv",
+    "com.amazon.amazonvideo.livingroom"
+  ],
+  "rows_below_dock": 0,
+  "module_cards": true,
+  "background_color": "#070A14",
+  "wallpaper": true,
+  "wallpaper_rotation_minutes": 0,
+  "wallpaper_order": "sequential",
+  "single_row": true,
+  "dock_row": true,
+  "uniform_tiles": true
+}
