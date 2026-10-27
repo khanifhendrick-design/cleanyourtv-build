@@ -8,11 +8,28 @@ android {
 
     defaultConfig {
         // Opt-in identity for firmware with a package-name HOME allowlist; see docs/devices/xiaomi-mitv-aetp0-dofus.md.
-        applicationId providers.gradleProperty('launcherApplicationId').getOrElse('com.gathin.tvhome')
+        applicationId providers.gradleProperty('launcherApplicationId').getOrElse('id.khanifhendrick.tvhome')
         minSdk 26
         targetSdk 34
-        versionCode 9
-        versionName '3.0'
+        versionCode 10
+        versionName '3.1'
+    }
+
+    signingConfigs {
+        release {
+            def ksPath = System.getenv("TVHOME_KEYSTORE_PATH")
+            def ksStorePassword = System.getenv("TVHOME_STORE_PASSWORD")
+            def ksKeyPassword = System.getenv("TVHOME_KEY_PASSWORD")
+
+            if (ksPath && ksStorePassword && ksKeyPassword) {
+                storeFile file(ksPath)
+                storePassword ksStorePassword
+                keyAlias "tvhome"
+                keyPassword ksKeyPassword
+            } else {
+                throw new GradleException("TVHome release signing secrets are not configured")
+            }
+        }
     }
 
     buildTypes {
@@ -21,8 +38,8 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            // Sideloaded over ADB, never published: sign with the debug key so it installs over a debug build.
-            signingConfig signingConfigs.debug
+            // Sign the custom TVHome APK with our own private release key.
+            signingConfig signingConfigs.release
         }
     }
 
