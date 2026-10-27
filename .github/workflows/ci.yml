@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, tvhome-custom-2026]
   pull_request:
 
 permissions:
