@@ -374,6 +374,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (needsWallpaperPermission()) {
+            requestPermissions(new String[] { Build.VERSION.SDK_INT >= 33
+                    ? "android.permission.READ_MEDIA_IMAGES"
+                    : "android.permission.READ_EXTERNAL_STORAGE" }, 704);
+            return;
+        }
         setContentView(R.layout.activity_main);
         density = getResources().getDisplayMetrics().density;
         // config.xml, overlaid by config.json from a pushed theme (see Config and tools/theme.sh).
@@ -915,6 +921,26 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
         updateClockVisibility();
         tileRefresh.onStart();
+    }
+
+    private boolean needsWallpaperPermission() {
+        if (getPreferences(MODE_PRIVATE).getBoolean("wallpaper_permission_asked", false)) return false;
+        if (Build.VERSION.SDK_INT >= 33) {
+            return checkSelfPermission("android.permission.READ_MEDIA_IMAGES") != PackageManager.PERMISSION_GRANTED;
+        }
+        if (Build.VERSION.SDK_INT >= 23) {
+            return checkSelfPermission("android.permission.READ_EXTERNAL_STORAGE") != PackageManager.PERMISSION_GRANTED;
+        }
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 704) {
+            getPreferences(MODE_PRIVATE).edit().putBoolean("wallpaper_permission_asked", true).apply();
+            recreate();
+        }
     }
 
     @Override

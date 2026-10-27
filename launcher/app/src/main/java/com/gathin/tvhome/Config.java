@@ -603,8 +603,18 @@ final class Config {
         // An unknown order must not silently change how an existing collection rotates.
         if (!WallpaperRotation.validOrder(wallpaperOrder)) wallpaperOrder = WallpaperRotation.ORDER_SHUFFLE;
         List<File> wallpapers = new ArrayList<>();
-        if (rotationMinutes > 0 && dir != null && wallpaperEnabled) {
-            wallpapers.addAll(WallpaperRotation.images(new File(dir, "wallpapers")));
+        if (rotationMinutes > 0 && wallpaperEnabled) {
+            // Keep theme-managed wallpapers, and also include user images from the public TV folder.
+            if (dir != null) wallpapers.addAll(WallpaperRotation.images(new File(dir, "wallpapers")));
+            File publicWallpapers = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES), "wallpaper tv");
+            for (File image : WallpaperRotation.images(publicWallpapers)) {
+                boolean duplicate = false;
+                for (File existing : wallpapers) {
+                    if (existing.getAbsolutePath().equals(image.getAbsolutePath())) { duplicate = true; break; }
+                }
+                if (!duplicate && wallpapers.size() < 100) wallpapers.add(image);
+            }
         }
         if (wallpapers.isEmpty() && wallpaper != null) wallpapers.add(wallpaper);
         // An on-TV wallpaper pick overrides the theme: a filename from the wallpapers/
