@@ -284,36 +284,84 @@ final class WallpaperPlayer {
         if (old != null && old != bitmap) image.postDelayed(old::recycle, 500);
     }
 
+    private void drawCover(Canvas canvas, Bitmap bitmap, float targetWidth,
+                           float targetHeight, android.graphics.Paint paint) {
+        float scale = Math.max(targetWidth / bitmap.getWidth(),
+                               targetHeight / bitmap.getHeight());
+        float left = (targetWidth - bitmap.getWidth() * scale) / 2f;
+        float top = (targetHeight - bitmap.getHeight() * scale) / 2f;
+        canvas.drawBitmap(bitmap, null,
+                new android.graphics.RectF(left, top,
+                    left + bitmap.getWidth() * scale,
+                    top + bitmap.getHeight() * scale), paint);
+    }
+
     private Bitmap decode(File file) {
+        Bitmap source = null;
+        Bitmap smallBackground = null;
+        Bitmap output = null;
         try {
+            BitmapFactory.Options bounds = new BitmapFactory.Options();
+            bounds.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(file.getPath(), bounds);
+            int sourceWidth = bounds.outWidth, sourceHeight = bounds.outHeight;
+            if (sourceWidth <= 0 || sourceHeight <= 0) return null;
+
+            int sample = WallpaperSize.sampleSize(
+                    sourceWidth, sourceHeight, this.width, this.height);
+            if (!WallpaperSize.accepted(sourceWidth / sample, sourceHeight / sample))
+                return null;
+
             BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(file.getPath(), options);
-            int width = options.outWidth, height = options.outHeight;
-            if (width <= 0 || height <= 0) return null;
-            int sample = WallpaperSize.sampleSize(width, height, this.width, this.height);
-            if (!WallpaperSize.accepted(width / sample, height / sample)) return null;
-            options.inJustDecodeBounds = false;
             options.inSampleSize = sample;
-            int[] scale = WallpaperSize.coverScale(width / sample, height / sample, this.width, this.height);
-            if (scale != null) {
-                options.inScaled = true;
-                options.inDensity = scale[0];
-                options.inTargetDensity = scale[1];
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            source = BitmapFactory.decodeFile(file.getPath(), options);
+            if (source == null) return null;
+
+            Bitmap.Config outputConfig = bitmapConfig == Bitmap.Config.RGB_565
+                    ? Bitmap.Config.RGB_565 : Bitmap.Config.ARGB_8888;
+            output = Bitmap.createBitmap(width, height, outputConfig);
+            Canvas canvas = new Canvas(output);
+            android.graphics.Paint paint = new android.graphics.Paint(
+                    android.graphics.Paint.FILTER_BITMAP_FLAG |
+                    android.graphics.Paint.DITHER_FLAG);
+
+            if (source.getHeight() > source.getWidth()) {
+                // Portrait: stretch a tiny, cover-cropped copy into the background,
+                // then place the complete original photo in the center.
+                int smallWidth = Math.max(1, width / 24);
+                int smallHeight = Math.max(1, height / 24);
+                smallBackground = Bitmap.createBitmap(
+                        smallWidth, smallHeight, Bitmap.Config.ARGB_8888);
+                drawCover(new Canvas(smallBackground), source,
+                        smallWidth, smallHeight, paint);
+                canvas.drawBitmap(smallBackground, null,
+                        new android.graphics.Rect(0, 0, width, height), paint);
+
+                float scale = Math.min((float) width / source.getWidth(),
+                                       (float) height / source.getHeight());
+                float drawWidth = source.getWidth() * scale;
+                float drawHeight = source.getHeight() * scale;
+                float left = (width - drawWidth) / 2f;
+                float top = (height - drawHeight) / 2f;
+                canvas.drawBitmap(source, null,
+                        new android.graphics.RectF(left, top,
+                            left + drawWidth, top + drawHeight), paint);
+            } else {
+                // Landscape photos continue to fill the entire TV screen.
+                drawCover(canvas, source, width, height, paint);
             }
-            options.inPreferredConfig = bitmapConfig;
-            options.inMutable = dimColor != 0;
-            Bitmap decoded = BitmapFactory.decodeFile(file.getPath(), options);
-            if (decoded == null) return null;
-            if (dimColor != 0) new Canvas(decoded).drawColor(dimColor);
-            // One copy in GPU memory instead of a software bitmap plus its texture; the decode stays off the UI
-            // thread for rotations, and Home's return no longer uploads 4-8 MB to the GPU.
-            Bitmap gpu = decoded.copy(Bitmap.Config.HARDWARE, false);
-            if (gpu == null) return decoded;
-            decoded.recycle();
-            return gpu;
+
+            if (dimColor != 0) canvas.drawColor(dimColor);
+            Bitmap hardware = output.copy(Bitmap.Config.HARDWARE, false);
+            return hardware != null ? hardware : output;
         } catch (Exception | OutOfMemoryError failure) {
+            if (output != null && !output.isRecycled()) output.recycle();
             return null;
+        } finally {
+            if (source != null && !source.isRecycled()) source.recycle();
+            if (smallBackground != null && !smallBackground.isRecycled())
+                smallBackground.recycle();
         }
     }
 }

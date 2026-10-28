@@ -41,9 +41,9 @@ public class PrayerTimesPanel extends LinearLayout {
     public PrayerTimesPanel(Context c) {
         super(c);
         setOrientation(VERTICAL);
-        setPadding(14,10,14,10);
+        setPadding(8,6,8,6);
         GradientDrawable bg=new GradientDrawable();
-        bg.setColor(Color.argb(220,20,26,36));
+        bg.setColor(Color.argb(125,20,26,36));
         bg.setCornerRadius(14);
         bg.setStroke(1,Color.argb(60,255,255,255));
         setBackground(bg);
@@ -56,29 +56,29 @@ public class PrayerTimesPanel extends LinearLayout {
         titles.setOrientation(VERTICAL);
         titles.setPadding(9,0,0,0);
         head.addView(titles,new LayoutParams(0,-2,1));
-        titles.addView(text("ADZAN TV",14,Color.WHITE,true));
-        titles.addView(text("GRABAG · MAGELANG",10,Color.LTGRAY,false));
+        titles.addView(text("JADWAL SALAT",11,Color.WHITE,true));
+        titles.addView(text("GRABAG · MAGELANG",8,Color.LTGRAY,false));
 
-        status=text("MEMUAT JADWAL SALAT",10,Color.LTGRAY,false);
+        status=text("MEMUAT",8,Color.LTGRAY,false);
         head.addView(status,new LayoutParams(-2,-2));
 
         LinearLayout row=new LinearLayout(c);
         row.setGravity(Gravity.CENTER);
         LayoutParams rp=new LayoutParams(-1,-2);
-        rp.topMargin=10;
+        rp.topMargin=4;
         addView(row,rp);
 
         for(int i=0;i<7;i++){
             LinearLayout cell=new LinearLayout(c);
             cell.setOrientation(VERTICAL);
             cell.setGravity(Gravity.CENTER);
-            cell.setPadding(2,7,2,7);
+            cell.setPadding(1,3,1,3);
             row.addView(cell,new LayoutParams(0,-2,1));
             cells[i]=cell;
-            TextView name=text(labels[i],9,Color.LTGRAY,true);
+            TextView name=text(labels[i],7,Color.LTGRAY,true);
             name.setGravity(Gravity.CENTER);
             cell.addView(name);
-            times[i]=text("--:--",13,Color.WHITE,true);
+            times[i]=text("--:--",10,Color.WHITE,true);
             times[i].setGravity(Gravity.CENTER);
             times[i].setPadding(0,5,0,0);
             cell.addView(times[i]);
