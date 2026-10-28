@@ -603,7 +603,7 @@ final class Config {
         // An unknown order must not silently change how an existing collection rotates.
         if (!WallpaperRotation.validOrder(wallpaperOrder)) wallpaperOrder = WallpaperRotation.ORDER_SHUFFLE;
         List<File> wallpapers = new ArrayList<>();
-        if (rotationMinutes > 0 && wallpaperEnabled) {
+        if (wallpaperEnabled) {
             // Keep theme-managed wallpapers, and also include user images from the public TV folder.
             if (dir != null) wallpapers.addAll(WallpaperRotation.images(new File(dir, "wallpapers")));
             File publicWallpapers = new File(Environment.getExternalStoragePublicDirectory(
@@ -626,7 +626,23 @@ final class Config {
             wallpapers.clear();
             wallpapers.addAll(chosen);
             wallpaper = chosen.isEmpty() ? null : chosen.get(0);
-            wallpaperEnabled = !chosen.isEmpty();
+        }
+
+        // Keep local TV wallpapers available independently of the saved theme choice.
+        if (json == null || bool(json, "wallpaper", true)) {
+            File publicWallpapers = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES), "wallpaper tv");
+            for (File image : WallpaperRotation.images(publicWallpapers)) {
+                boolean duplicate = false;
+                for (File existing : wallpapers) {
+                    if (existing.getAbsolutePath().equals(image.getAbsolutePath())) {
+                        duplicate = true;
+                        break;
+                    }
+                }
+                if (!duplicate && wallpapers.size() < 100) wallpapers.add(image);
+            }
+            if (!wallpapers.isEmpty()) wallpaperEnabled = true;
         }
         // A festive skin comes only from a theme; config.xml has no festival.
         Festival festival = json == null ? Festival.NONE : Festival.parse(string(json, "festival", ""),

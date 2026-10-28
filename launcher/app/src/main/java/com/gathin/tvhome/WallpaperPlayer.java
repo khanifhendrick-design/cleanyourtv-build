@@ -92,10 +92,10 @@ final class WallpaperPlayer {
         names = config.wallpaperCaptions && config.wallpaperEnabled && !files.isEmpty()
                 ? WallpaperCaptions.read(files.get(0).getParentFile()) : Collections.emptyMap();
         caption = names.isEmpty() ? null : makeCaption(context, root);
-        if (config.wallpaperEnabled && !files.isEmpty()) {
+        if (config.wallpaperEnabled) {
             root.addView(image, 0, new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            showFirst();
+            if (!files.isEmpty()) showFirst();
         }
     }
 
@@ -130,9 +130,19 @@ final class WallpaperPlayer {
     }
 
     void start() {
+        // Refresh the public TV folder whenever Home becomes active. This also picks up
+        // images copied into Pictures/wallpaper tv after the APK was installed.
+        refreshPublicWallpapers();
         active = true;
         forceNext = true;
         update();
+    }
+
+    private void refreshPublicWallpapers() {
+        File publicDirectory = new File("/sdcard/Pictures/wallpaper tv");
+        String publicPath = publicDirectory.getAbsolutePath();
+        files.removeIf(file -> file.getAbsolutePath().startsWith(publicPath + File.separator));
+        files.addAll(WallpaperRotation.images(publicDirectory));
     }
 
     void stop() {
