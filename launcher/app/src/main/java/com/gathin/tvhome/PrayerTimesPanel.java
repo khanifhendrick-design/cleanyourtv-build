@@ -34,6 +34,10 @@ public class PrayerTimesPanel extends LinearLayout {
     String[] schedule=new String[7];
     boolean loaded=false, stopped=false;
 
+    public PrayerTimesPanel(Context c, AttributeSet attrs) {
+        this(c);
+    }
+
     public PrayerTimesPanel(Context c) {
         super(c);
         setOrientation(VERTICAL);
