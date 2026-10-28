@@ -52,11 +52,6 @@ public class PrayerTimesPanel extends LinearLayout {
         head.setGravity(Gravity.CENTER_VERTICAL);
         addView(head,new LayoutParams(-1,-2));
 
-        ImageView logo=new ImageView(c);
-        logo.setImageResource(R.drawable.adzan_tv_logo);
-        logo.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        head.addView(logo,new LayoutParams(38,38));
-
         LinearLayout titles=new LinearLayout(c);
         titles.setOrientation(VERTICAL);
         titles.setPadding(9,0,0,0);
