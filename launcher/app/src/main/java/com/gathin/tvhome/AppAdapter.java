@@ -466,8 +466,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // nothing on every frame; keep it under banners with transparent parts and under icon tiles.
         h.card.setBackground(e.banner != null && e.banner.getOpacity() == PixelFormat.OPAQUE ? null : h.cardBackground);
         if (uniformTiles && e.banner == null) {
-            if (e.backdrop == null) e.backdrop = backdrop(e.icon, ambientColorAt(position));
-            h.card.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, e.backdrop));
+            float density = ctx.getResources().getDisplayMetrics().density;
+            GradientDrawable tile = new GradientDrawable();
+            tile.setColor(0x66303030);
+            tile.setCornerRadius(16f * density);
+            h.card.setBackground(tile);
         }
         if (e.banner != null) {
             h.banner.setImageDrawable(e.banner);
