@@ -95,7 +95,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    static final float FOCUS_SCALE = 1.10f;
+    static final float FOCUS_SCALE = 1.04f;
     /** Design size of a tile (dp); tiles shrink from here when the columns don't fit, see tileWidthPx. */
     static final float DESIGN_W_DP = 180f, DESIGN_H_DP = 101f;
 
@@ -409,8 +409,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         card.setLayoutParams(cardLp);
         View name = v.findViewById(R.id.name);
         ViewGroup.MarginLayoutParams nameLp = (ViewGroup.MarginLayoutParams) name.getLayoutParams();
-        nameLp.width = w;
-        nameLp.topMargin = h + Math.round((dockRow ? 7 : 4) * density);
+        nameLp.width = Math.round(w * 0.48f);
+        nameLp.topMargin = Math.round(8 * density);
         if (!dockRow) {
             // Compact spacing (COMPACT_ITEM_EXTRA_DP): 4dp item padding and a 20dp name instead of 8dp and 22dp.
             nameLp.height = Math.round(20 * density);
@@ -465,7 +465,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // A fully opaque banner covers the whole card (centerCrop), so the card's own fill under it is drawn for
         // nothing on every frame; keep it under banners with transparent parts and under icon tiles.
         h.card.setBackground(e.banner != null && e.banner.getOpacity() == PixelFormat.OPAQUE ? null : h.cardBackground);
-        if (uniformTiles && e.banner == null) {
+        if (uniformTiles) {
             float density = ctx.getResources().getDisplayMetrics().density;
             GradientDrawable tile = new GradientDrawable();
             tile.setColor(0x66303030);
@@ -661,7 +661,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     /** Share of the tile height the icon takes in uniform_tiles mode (onCreateViewHolder). */
-    private static final float ICON_SHARE = 0.62f;
+    private static final float ICON_SHARE = 0.82f;
 
     /**
      * The colour covering most of an icon, for a card that should read as that app: a small saturated badge
