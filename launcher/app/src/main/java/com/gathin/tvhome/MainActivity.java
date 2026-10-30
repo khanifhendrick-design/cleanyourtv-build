@@ -1722,7 +1722,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void showHero(int position, float dockTopInRoot) {
         String label = adapter.labelAt(position);
         int color = adapter.ambientColorAt(position);
+        if (hero == null || heroName == null || prayerTimesPanel == null) return;
         View heroParent = (View) hero.getParent();
+        if (heroParent == null) return;
         int[] prayerPos = new int[2];
         int[] parentPos = new int[2];
         prayerTimesPanel.getLocationInWindow(prayerPos);
