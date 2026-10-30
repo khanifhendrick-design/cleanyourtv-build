@@ -1722,7 +1722,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private void showHero(int position, float dockTopInRoot) {
         String label = adapter.labelAt(position);
         int color = adapter.ambientColorAt(position);
-        float y = dockTopInRoot - 14 * density - 26 * density - hero.getHeight();
+        View heroParent = (View) hero.getParent();
+        int[] prayerPos = new int[2];
+        int[] parentPos = new int[2];
+        prayerTimesPanel.getLocationInWindow(prayerPos);
+        heroParent.getLocationInWindow(parentPos);
+        float y = prayerPos[1] - parentPos[1]
+                + prayerTimesPanel.getHeight() - hero.getHeight();
+        float x = heroParent.getWidth() - hero.getWidth() - 56 * density;
         boolean changed = !label.contentEquals(heroName.getText());
         if (cinematic && heroArtAlpha > 0f) showHeroArt(position);
 
@@ -1732,7 +1739,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             hero.animate().cancel();
             ambient.animate().cancel();
             fillHero(position, label);
-            hero.setY(y);
+            hero.setY(y); hero.setX(x);
             hero.setTranslationX(0f);
             hero.setAlpha(1f);
             if (ambientGlow) {
@@ -1748,7 +1755,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             hero.animate().cancel();
             ambient.animate().cancel();
             fillHero(position, label);
-            hero.setY(y);
+            hero.setY(y); hero.setX(x);
             hero.setTranslationX(0f);
             hero.animate().alpha(1f).setDuration(260).start();
             if (ambientGlow) {
@@ -1761,6 +1768,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             hero.animate().alpha(0f).translationX(-12 * density).setDuration(120).withEndAction(() -> {
                 fillHero(position, label);
                 hero.setY(y);
+                    hero.setX(x);
                 hero.setTranslationX(12 * density);
                 hero.animate().alpha(1f).translationX(0f).setDuration(200).start();
             }).start();
@@ -1773,7 +1781,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 }).start();
             }
         } else {
-            hero.setY(y);
+            hero.setY(y); hero.setX(x);
         }
     }
 
@@ -1792,7 +1800,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * scrimPercent of its strength (cinematic_scrim). cinematic_art 0 leaves the artwork out, 0 percent the scrim.
      */
     private void setUpCinematicShelf(int scrimPercent) {
-        heroName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 68f);
+        heroName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f);
         heroName.setLetterSpacing(-0.025f);
         heroMeta.setVisibility(View.INVISIBLE);   // keeps its height, so the name does not jump when it fills in
         heroDots.setVisibility(heroDotsShown ? View.VISIBLE : View.GONE);
