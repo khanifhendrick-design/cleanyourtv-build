@@ -344,10 +344,12 @@ public class HomeKeyService extends AccessibilityService {
     }
 
     private void openHome() {
-        Intent open = stockHomeStays() ? new Intent(this, MainActivity.class)
-                : new Intent(Intent.ACTION_MAIN).setPackage(getPackageName());
-        startActivity(open.addCategory(Intent.CATEGORY_HOME)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));
+        Intent open = getPackageManager().getLaunchIntentForPackage("dev.plume");
+        if (open == null) {
+            open = new Intent(this, MainActivity.class);
+        }
+        startActivity(open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));
     }
 
     /** stock_home_redirect while Android's Home is still the stock launcher (launcherx on Google TV outranks this
